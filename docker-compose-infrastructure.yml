@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres
+    # PostGIS is a spatial database extender for PostgreSQL object-relational database.
+    # It adds support for geographic objects allowing location queries to be run in SQL.
+    # image: postgis/postgis
+    container_name: postgres
+    ports:
+      - "5432:5432" # password = password
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data # to persist data even if container is deleted.
+
+  activemq:
+    image: rmohr/activemq:5.15.9-alpine
+    container_name: activemq
+    ports:
+      - "15673:15673"
+      - "5673:5673"
+      - "61616:61616" # broker
+      - "8161:8161"   # web http://localhost:8161/admin (admin:admin)
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672" # broker
+      - "15672:15672" # Management plugin http://localhost:15672 (guest:guest)
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./portainer-data:/data
+    ports:
+      - 9000:9000 # Web http://localhost:9000 (admin:password)
+
+  sql-server:
+    container_name: sql-server
+    image: microsoft/mssql-server:2019-latest
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "rRhQ]lDII0rHF-gF" # at least 8 characters: uppercase letters, lowercase letters, numbers and non-alphanumeric symbols.
+      ACCEPT_EULA: "Y"
